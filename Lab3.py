@@ -3,8 +3,7 @@
 # CONSTANT file path; PEM format). If the files does not exist (use OS package) 
 # then generate the RSA public and private key (2048 bits length) using the same
 # constant file path.
-import warnings
-warnings.filterwarnings("ignore", message="Reloaded modules: <Lab2>")
+
 from os import path
 import os
 from cryptography.hazmat.backends import default_backend
@@ -41,7 +40,7 @@ def keyValidation():
             format = serialization.PrivateFormat.TraditionalOpenSSL, #An enumeration for private key formats. Inputs the -----BEGIN RSA PRIVATE KEY----- in the PEM file
             encryption_algorithm = serialization.NoEncryption()) #Serialize w/o encryption
 
-        #Creating the publicKey.PEM file, serialize the public key using public_bytes
+        # Creating the publicKey.PEM file, serialize the public key using public_bytes
         publicPem = publicKey.public_bytes(
             encoding = serialization.Encoding.PEM,
             format = serialization.PublicFormat.SubjectPublicKeyInfo #typical public key format. It consists of an algorithm identifier and the public key as a bit string. Choose this unless you have specific needs.
@@ -59,15 +58,15 @@ def keyValidation():
         
 #STEP 2
 # Create the method (RSACipher, C, IV, tag, ext) = MyRSAEncrypt(filepath, RSA_Publickey_filepath):
-#In this method, you first call MyfileEncryptMAC (filepath) which will return (C, IV, tag, Enckey, HMACKey, ext). You
+# In this method, you first call MyfileEncryptMAC (filepath) which will return (C, IV, tag, Enckey, HMACKey, ext). You
 # then will initialize an RSA public key encryption object and load pem publickey from the RSA_publickey_filepath. 
-#Lastly, you encrypt the key variable ("key"= EncKey+ HMACKey (concatenated)) using the RSA publickey in OAEP padding mode.
+# Lastly, you encrypt the key variable ("key"= EncKey+ HMACKey (concatenated)) using the RSA publickey in OAEP padding mode.
 # The result will be RSACipher. You then return (RSACipher, C, IV, ext). Remember to do the inverse
 # (MyRSADecrypt (RSACipher, C, IV, tag, ext, RSA_Privatekey_filepath)) which does the exactly inverse of the above
 # and generate the decrypted file using your previous decryption methods.
 
 def MyRSAencrypt(filepath, RSA_Publickey_filepath):
-    #call encryption 
+    # call encryption 
     C, IV, tag, EncKey, HMACKey, ext  = MyFileEncryptionMAC(filepath)
 
     # load public key from file
@@ -88,7 +87,7 @@ def MyRSAencrypt(filepath, RSA_Publickey_filepath):
 
 def MyRSAdecrypt(filepath, RSACipher, C, IV, tag, ext, RSA_Privatekey_filepath):
 
-    #Open the the private key .PEM file 
+    # Open the the private key .PEM file 
     with open(RSA_Privatekey_filepath, 'rb') as key_file:
         private_key = serialization.load_pem_private_key( 
             key_file.read(),
@@ -103,11 +102,11 @@ def MyRSAdecrypt(filepath, RSACipher, C, IV, tag, ext, RSA_Privatekey_filepath):
                     algorithm = hashes.SHA256(),
                     label = None))
 
-    #Deconcatenating the keys
-    #first 32 bytes are encryption key 
+    # Deconcatenating the keys
+    # first 32 bytes are enc key 
     EncKey = key[:32]
 
-    #last 32 byets are hmac key
+    # last 32 byets are hmac key
     HMACKey = key[-32:]
 
     # Decrypt and obtain the m (plaintext)
